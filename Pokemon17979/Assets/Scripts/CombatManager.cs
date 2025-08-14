@@ -7,15 +7,9 @@ public class CombatManager : StateMachine
 
     public static GameObject newCombatArena;
 
-    public Queue<Turn> turnQueue = new Queue<Turn>();
-
     public static CombatManager Instance => GetInstance();
     private static CombatManager m_instance;
 
-    public PokemonComponent playerPokemon;
-    public PokemonComponent enemyPokemon;
-
-    public PokemonMove PokemonMove;
     private static CombatManager GetInstance()
     {
         if (m_instance == null)
@@ -29,6 +23,13 @@ public class CombatManager : StateMachine
         }
         return m_instance;
     }
+    #endregion
+    public Queue<Turn> turnQueue = new Queue<Turn>();
+
+    public PokemonComponent playerPokemon;
+    public PokemonComponent enemyPokemon;
+
+    public PokemonMove PokemonMove;
 
     public void StartCombat(Pokemon p_Pokemon1, Pokemon p_Pokemon2)
     {
@@ -48,22 +49,40 @@ public class CombatManager : StateMachine
     {
         Pokemoninformation fastestPokemon;
         Pokemoninformation slowestPokemon;
+        PokemonMove fastestmove, slowestMove;
 
         if (Instance.playerPokemon.m_PokemonInfo.Speed >= Instance.enemyPokemon.m_PokemonInfo.Speed)
         {
             fastestPokemon = Instance.playerPokemon.m_PokemonInfo;
+            fastestmove = Instance.playerPokemon.UseRandomMove();
             slowestPokemon = Instance.enemyPokemon.m_PokemonInfo;
+            slowestMove = Instance.enemyPokemon.UseRandomMove();
         }
         else
         {
             fastestPokemon = Instance.enemyPokemon.m_PokemonInfo;
+            fastestmove = Instance.enemyPokemon.UseRandomMove();
             slowestPokemon = Instance.playerPokemon.m_PokemonInfo;
+            slowestMove = Instance.playerPokemon.UseRandomMove();
         }
-        turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon));
-        turnQueue.Enqueue(new Turn(slowestPokemon, fastestPokemon));
+        Instance.turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon, fastestmove));
+        Instance.turnQueue.Enqueue(new Turn(slowestPokemon, fastestPokemon, slowestMove));
     }
 
-    public float CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
+    public void PlayNextTurn()
+    {
+        if(Instance.turnQueue.Count == 0)
+        {
+            StartNewRound();
+        }
+        else
+        {
+            Turn t_NextTurn = Instance.turnQueue.Dequeue();
+            t_NextTurn.StartTurn();
+        }
+    }
+
+    public static float CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
     {
         if (move.IsSpecial)
         {
