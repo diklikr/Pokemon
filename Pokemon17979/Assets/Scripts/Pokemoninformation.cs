@@ -28,7 +28,10 @@ public class Pokemoninformation
     public int Defense => m_Definition.Defense + m_Level;
     public int SpecialDefense => m_Definition.SpecialDefense + m_Level;
     public int Speed => m_Definition.Speed + m_Level;
-    
+    public int CurrentHP => m_currentHealth;
+
+    public bool IsFainted => m_currentHealth <= 0;
+
     public PokemonTypes.TypeList MainType => m_Definition.MainType;
     public PokemonTypes.TypeList SecondaryType => m_Definition.SecondaryType;
 

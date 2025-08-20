@@ -1,6 +1,12 @@
+using UnityEngine;
+
 public class WaitforActionState : State
     {
-        public override void Enter()
+        public void StartTurn()
+        {
+       
+        }
+    public override void Enter()
         {
             
         }
