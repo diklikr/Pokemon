@@ -6,11 +6,18 @@ public class GameManager : MonoBehaviour
     #region Singleton
     private static GameManager m_instance;
 
-    [SerializeField]
-    float GlobalXPRate = 1;
+    [SerializeField] public Pokemon poke1;
+    [SerializeField] public Pokemon poke2;
+    [SerializeField] public Pokemon poke3;
+    [SerializeField] public Pokemon poke4;
+
+
+    //[SerializeField]
+    //float GlobalXPRate = 1;
 
     GameObject CombatArenaPrefab;
-
+    
+    
     public static GameManager GetInstance()
     {
         if(m_instance != null) { return m_instance; }
@@ -32,26 +39,24 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    //public static void StartCombat()
-    //{
-    //    SceneManager.CreateScene("CombatArena", new CreateSceneParameters(LocalPhysicsMode.Physics3D));
-    //    Scene combatArenaScene = SceneManager.GetSceneByName("CombatArena");
-    //    if (combatArenaScene.isLoaded)
-    //    {
-    //        SceneManager.SetActiveScene(combatArenaScene);
-    //        newCombatArena.transform.position = Vector3.zero;
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("Combat Arena Scene could not be loaded");
-    //    }
-    //}
 
     // Update is called once per frame
-   public static PokemonComponent SpawnPokemon(Pokemon p_Pokemon, Vector3 p_Position)
+    public static PokemonComponent SpawnPokemon(Pokemon p_Pokemon,Vector3 p_Position)
     {
         PokemonComponent pokemonComponent = Instantiate(GetInstance().PokemonPreFab, p_Position, Quaternion.identity).GetComponent<PokemonComponent>();
         pokemonComponent.Initialize(p_Pokemon);
         return pokemonComponent;
+    }
+    public Pokemon GetRandomPokemon()
+    {
+        Pokemon[] pokemons = { poke1, poke2, poke3, poke4 };
+        int randomIndex = Random.Range(0, pokemons.Length);
+        return pokemons[randomIndex];
+    }
+    public static void StartCombat(Pokemon playerPoke)
+    {
+        SceneManager.LoadScene("CombatScene");
+        SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
+        SpawnPokemon(, new Vector3(10, 0, 20));
     }
 }

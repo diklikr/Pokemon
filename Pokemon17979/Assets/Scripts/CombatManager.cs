@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine.SceneManagement;
 
 public class CombatManager : StateMachine
 {
     #region Singleton
-
     public static GameObject newCombatArena;
 
     public static CombatManager Instance => GetInstance();
@@ -25,25 +26,16 @@ public class CombatManager : StateMachine
     }
     #endregion
     public Queue<Turn> turnQueue = new Queue<Turn>();
-
+    Pokemon pokemonAleatorio;
     public PokemonComponent playerPokemon;
     public PokemonComponent enemyPokemon;
-
     public PokemonMove PokemonMove;
 
-    public void StartCombat(Pokemon p_Pokemon1, Pokemon p_Pokemon2)
-    {
-        GameObject combatArena = GameManager.newCombatArena;
-        Instance.playerPokemon = GameManager.SpawnPokemon(p_Pokemon1, Vector3.zero);
-        Instance.enemyPokemon = GameManager.SpawnPokemon(p_Pokemon2, Vector3.zero * 5f);
-        StartNewRound();
-    }
-
+    
     public void StartNewRound()
     {
         Instance.turnQueue.Clear();
         Instance.ChangeState(new WaitforActionState());
-
     }
     public void BuildTurnQueue()
     {
@@ -82,7 +74,7 @@ public class CombatManager : StateMachine
         }
     }
 
-    public static float CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
+    public static int CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
     {
         if (move.IsSpecial)
         {

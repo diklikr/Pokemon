@@ -58,7 +58,7 @@ public class Turn
         }
         public override void Enter()
         {
-            int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker, m_Turn.m_Receiver));
+            int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker, m_Turn.m_Receiver);
             m_Turn.m_Receiver.GetDamaged(damage);
         }
         public override void Exit()
@@ -73,7 +73,7 @@ public class Turn
             }
             else
             {
-                CombatManager.PlayNextTurn;
+                //CombatManager.PlayNextTurn;
             }
         }
         public override void Update()

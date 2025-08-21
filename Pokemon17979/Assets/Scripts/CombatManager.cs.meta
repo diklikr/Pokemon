@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: 32f2527ff4c58a9439bd6b9f3be945a9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - poke1: {fileID: 11400000, guid: 33df334321872154aaa0adb96ac4a470, type: 2}
+  - poke2: {fileID: 11400000, guid: 08dd83cc2163e2d40bff6deaf6261349, type: 2}
+  - poke3: {fileID: 11400000, guid: dd0356f119b123c46b14eadf0d486c19, type: 2}
+  - poke4: {fileID: 11400000, guid: e4db987e67dc45a42b5b7771158ddb20, type: 2}
+  - playerPokemon: {instanceID: 0}
+  - enemyPokemon: {instanceID: 0}
+  - PokemonMove: {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

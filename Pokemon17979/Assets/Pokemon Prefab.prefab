@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 730003691924458877}
   - component: {fileID: 3788605347460426255}
-  - component: {fileID: 1753445983203000774}
   - component: {fileID: 5457397048125033625}
   m_Layer: 0
   m_Name: Pokemon Prefab
@@ -44,18 +43,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29fe898ebf1344c4e869a38c8bbac147, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1753445983203000774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5229000606617260080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c7d2a6081221ba46b86d7abdb7b6b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5457397048125033625

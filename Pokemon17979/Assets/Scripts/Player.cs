@@ -68,7 +68,7 @@ public class PlayerIdle : State
     }
     public override void Enter()
     {
-        Debug.Log("player is idle");
+        //Debug.Log("player is idle");
         m_Player.animator?.CrossFadeInFixedTime("Idle", 0.2f);
         m_Player.rigidBody.linearVelocity = Vector3.zero;
         m_Player.rigidBody.useGravity = false;
@@ -94,7 +94,7 @@ public class PlayerIdle : State
 
     public override void Exit()
     {
-        Debug.Log("Player no longer idle");
+        //Debug.Log("Player no longer idle");
     }
 }
 
@@ -108,13 +108,13 @@ public class PlayerMove : State
 
     public override void Enter()
     {
-        Debug.Log("Player is now walking");
+        //Debug.Log("Player is now walking");
         m_Player.animator?.CrossFadeInFixedTime("Move", 0.2f);
     }
 
     public override void Exit()
     {
-        Debug.Log("Player entering idle");
+        //Debug.Log("Player entering idle");
     }
 
     public override void FixedUpdate()
