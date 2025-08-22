@@ -12,16 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d5b49a98de13e34dbe0c2034d7aae50, type: 3}
   m_Name: Fatdactyl
   m_EditorClassIdentifier: 
-  m_name: Fatdactyl
+  m_PokemonName: 
   m_description: 
   m_sprite: {fileID: 0}
-  m_Mode1: {fileID: 0}
+  m_Mode1: {fileID: 7402009758359158996, guid: 4ecab060b0afb5d4db61f7f1311b9e24, type: 3}
   m_health: 0
   m_attack: 0
   m_specialAttack: 0
   m_defense: 0
   m_specialDefense: 0
   m_speed: 0
+  m_Moves: []
   m_MainType: 2
   m_SecondaryType: 3
   m_Evolutionlevel: 0

@@ -10,8 +10,12 @@ public class Pasto : MonoBehaviour
         {
             if (Random.value <= chance)
             {
-               GameManager.StartCombat();
-            print("Grass Encounter Triggered!");
+                // Get the GameManager instance and a random Pokemon for the encounter
+                GameManager gm = GameManager.GetInstance();
+                Pokemon playerPoke = gm.poke3; 
+                Pokemon wildPoke = gm.GetRandomPokemon();
+                GameManager.StartCombat(playerPoke, wildPoke);
+                print("Grass Encounter Triggered!");
             }
             else
             {

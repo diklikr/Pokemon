@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,13 +17,13 @@ public class GameManager : MonoBehaviour
     //float GlobalXPRate = 1;
 
     GameObject CombatArenaPrefab;
-    
-    
+
+
     public static GameManager GetInstance()
     {
-        if(m_instance != null) { return m_instance; }
+        if (m_instance != null) { return m_instance; }
         m_instance = FindAnyObjectByType<GameManager>();
-        if(m_instance != null) { return (m_instance); }
+        if (m_instance != null) { return (m_instance); }
         GameObject gameManagerObject = new GameObject("Game Manager");
         m_instance = gameManagerObject.AddComponent<GameManager>();
         return (m_instance);
@@ -41,7 +42,7 @@ public class GameManager : MonoBehaviour
 
 
     // Update is called once per frame
-    public static PokemonComponent SpawnPokemon(Pokemon p_Pokemon,Vector3 p_Position)
+    public static PokemonComponent SpawnPokemon(Pokemon p_Pokemon, Vector3 p_Position)
     {
         PokemonComponent pokemonComponent = Instantiate(GetInstance().PokemonPreFab, p_Position, Quaternion.identity).GetComponent<PokemonComponent>();
         pokemonComponent.Initialize(p_Pokemon);
@@ -53,10 +54,25 @@ public class GameManager : MonoBehaviour
         int randomIndex = Random.Range(0, pokemons.Length);
         return pokemons[randomIndex];
     }
-    public static void StartCombat(Pokemon playerPoke)
+    private static IEnumerator StartCombat1(Pokemon playerPoke, Pokemon playerPoke2)
     {
-        SceneManager.LoadScene("CombatScene");
-        SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
-        SpawnPokemon(, new Vector3(10, 0, 20));
+        AsyncOperation t_async = SceneManager.LoadSceneAsync("CombatScene");
+        while (!t_async.isDone)
+        {
+            yield return null;
+        }
+        PokemonComponent pokemonComponent = SpawnPokemon(playerPoke, new Vector3(0, 0, 0));
+        PokemonComponent pokemonComponent2 = SpawnPokemon(playerPoke2, new Vector3(10, 0, 0));
+        pokemonComponent.transform.LookAt(pokemonComponent2.transform);
+        pokemonComponent2.transform.LookAt(pokemonComponent.transform);
+
+        CombatManager.Instance.playerPokemon = pokemonComponent;
+        CombatManager.Instance.enemyPokemon = pokemonComponent2;
+        //SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
+        //SpawnPokemon(playerPoke2, new Vector3(10, 0, 20));
+    }
+    public static void StartCombat(Pokemon playerPoke, Pokemon playerPoke2)
+    {
+        GetInstance().StartCoroutine(StartCombat1(playerPoke, playerPoke2));
     }
 }
