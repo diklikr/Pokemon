@@ -30,6 +30,8 @@ public class Pokemoninformation
     public int Speed => m_Definition.Speed + m_Level;
     public int CurrentHP => m_currentHealth;
 
+    public int Level => m_Level;
+
     public bool IsFainted => m_currentHealth <= 0;
 
     public PokemonTypes.TypeList MainType => m_Definition.MainType;

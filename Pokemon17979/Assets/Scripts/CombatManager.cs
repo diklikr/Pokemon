@@ -31,6 +31,10 @@ public class CombatManager : StateMachine
     public PokemonComponent enemyPokemon;
     public PokemonMove PokemonMove;
 
+    public void SetPlayerMove(PokemonMove pMove)
+    {
+
+    }
     
     public void StartNewRound()
     {

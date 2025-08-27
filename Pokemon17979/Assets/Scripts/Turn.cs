@@ -4,8 +4,11 @@ public class Turn
     Pokemoninformation m_Receiver;
     PokemonMove m_MoveUsed;
 
+    Turn m_Turn;
+
     State m_Attack;
     State m_GetDamaged;
+    State m_death;
 
     public Turn(Pokemoninformation p_Attacker, Pokemoninformation p_Defender, PokemonMove p_MoveUsed)
     {
@@ -15,6 +18,7 @@ public class Turn
 
         m_Attack = new AttackState(this);
         m_GetDamaged = new DefendState(this);
+        m_death = new DeathState(this);
     }
 
     public void StartTurn()
@@ -79,6 +83,35 @@ public class Turn
         public override void Update()
         {
 
+        }
+    }
+
+    public class DeathState : State
+    {
+        Turn m_Turn;
+        public DeathState(Turn p_Turn)
+        {
+            m_Turn = p_Turn;
+        }
+
+        public override void Enter()
+        {
+            
+        }
+
+        public override void Exit()
+        {
+            
+        }
+
+        public override void FixedUpdate()
+        {
+            
+        }
+
+        public override void Update()
+        {
+            
         }
     }
 }
