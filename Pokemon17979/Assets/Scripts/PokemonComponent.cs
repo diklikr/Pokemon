@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PokemonComponent : MonoBehaviour
 {
+    public Animator Animator => m_Animator;
+
     public Pokemoninformation m_PokemonInfo;
     Animator m_Animator;
 

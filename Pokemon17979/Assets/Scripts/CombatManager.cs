@@ -90,4 +90,37 @@ public class CombatManager : StateMachine
         }
 
     }
+
+    public class WaitforActionState : State
+    {
+        public void StartTurn()
+        {
+
+        }
+        public override void Enter()
+        {
+            Instance.playerPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
+            Instance.enemyPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
+            Instance.PokemonMove = null;
+            Instance.m_UI.DisplayMessage($"Your {Instance.playerPokemon.name} is waiting for instructions...", 20f);
+            //Instance.m_TurnQueue.Clear
+        }
+        public override void Exit()
+        {
+
+        }
+        public override void FixedUpdate()
+        {
+            if (IsActionChosen())
+            {
+                CombatManager.Instance.BuildTurnQueue();
+            }
+        }
+        public override void Update()
+        {
+            if (CombatManager.Instance.PokemonMove == null) return;
+            (Turn first, Turn second) t_Turns = GetTurns(Instance.playerPokemon,  Instance.enemyPokemon, CombatManager.Instance.PokemonMove, Instance.enemyPokemon.UseRandomMove);
+        }
+        public bool IsActionChosen() => CombatManager.Instance.PokemonMove != null;
+    }
 }
