@@ -1,7 +1,7 @@
 public class Turn
 {
-    Pokemoninformation m_Attacker;
-    Pokemoninformation m_Receiver;
+    PokemonComponent m_Attacker;
+    PokemonComponent m_Receiver;
     PokemonMove m_MoveUsed;
 
     Turn m_Turn;
@@ -10,7 +10,7 @@ public class Turn
     State m_GetDamaged;
     State m_death;
 
-    public Turn(Pokemoninformation p_Attacker, Pokemoninformation p_Defender, PokemonMove p_MoveUsed)
+    public Turn(PokemonComponent p_Attacker, PokemonComponent p_Defender, PokemonMove p_MoveUsed)
     {
         m_Attacker = p_Attacker;
         m_Receiver = p_Defender;
@@ -62,8 +62,8 @@ public class Turn
         }
         public override void Enter()
         {
-            int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker, m_Turn.m_Receiver);
-            m_Turn.m_Receiver.GetDamaged(damage);
+            int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker.m_PokemonInfo, m_Turn.m_Receiver.m_PokemonInfo);
+            m_Turn.m_Receiver.m_PokemonInfo.GetDamaged(damage);
         }
         public override void Exit()
         {
@@ -71,7 +71,7 @@ public class Turn
         }
         public override void FixedUpdate()
         {
-            if (m_Turn.m_Receiver.Health <= 0)
+            if (m_Turn.m_Receiver.m_PokemonInfo.Health <= 0)
             {
                 //end combat
             }

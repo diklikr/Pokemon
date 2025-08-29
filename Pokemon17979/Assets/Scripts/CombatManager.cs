@@ -40,6 +40,8 @@ public class CombatManager : StateMachine
     {
         Instance.turnQueue.Clear();
         Instance.ChangeState(new WaitforActionState());
+
+       
     }
     public void BuildTurnQueue()
     {
@@ -102,7 +104,7 @@ public class CombatManager : StateMachine
             Instance.playerPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
             Instance.enemyPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
             Instance.PokemonMove = null;
-            Instance.m_UI.DisplayMessage($"Your {Instance.playerPokemon.name} is waiting for instructions...", 20f);
+            //Instance.m_UI.DisplayMessage($"Your {Instance.playerPokemon.name} is waiting for instructions...", 20f);
             //Instance.m_TurnQueue.Clear
         }
         public override void Exit()
@@ -114,12 +116,20 @@ public class CombatManager : StateMachine
             if (IsActionChosen())
             {
                 CombatManager.Instance.BuildTurnQueue();
+                CombatManager.Instance.PlayNextTurn();
+
+                if(CombatManager.Instance.playerMove != null)
+                    CombatManager.Instance.PlayNextTurn();
+                   
             }
         }
         public override void Update()
         {
             if (CombatManager.Instance.PokemonMove == null) return;
-            (Turn first, Turn second) t_Turns = GetTurns(Instance.playerPokemon,  Instance.enemyPokemon, CombatManager.Instance.PokemonMove, Instance.enemyPokemon.UseRandomMove);
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                CombatManager.Instance.playerMove = CombatManager.Instance.playerPokemon.UseRandomMove();
+            }
         }
         public bool IsActionChosen() => CombatManager.Instance.PokemonMove != null;
     }
