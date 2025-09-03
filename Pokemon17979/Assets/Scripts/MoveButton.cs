@@ -11,14 +11,14 @@ public class MoveButton : MonoBehaviour
   public void Initialize(PokemonMove p_Move)
     {
         m_MovetoChoose = p_Move;
-        //m_Move_Type.text = p_Move.Type.ToString();
+        m_Move_Type.text = $"Power: {m_Move_Type.ToString()}";
         m_Move_Name.text = p_Move.name;
-
     }
 
-    public void OnClick()
+    public void InformCombatManager()
     {
-        if(m_MovetoChoose == null)  return;
-        //CombatManager.SetPlayerMove(m_MovetoChoose);
+        if (CombatManager.Instance == null) return;
+        CombatManager.SetPlayerMove(m_MovetoChoose);
     }
+
 }

@@ -31,9 +31,9 @@ public class CombatManager : StateMachine
     public PokemonComponent enemyPokemon;
     public PokemonMove PokemonMove;
 
-    public void SetPlayerMove(PokemonMove pMove)
+    public static void SetPlayerMove(PokemonMove pMove)
     {
-
+        Instance.PokemonMove = pMove;
     }
     
     public void StartNewRound()
@@ -45,22 +45,22 @@ public class CombatManager : StateMachine
     }
     public void BuildTurnQueue()
     {
-        Pokemoninformation fastestPokemon;
-        Pokemoninformation slowestPokemon;
+        PokemonComponent fastestPokemon;
+        PokemonComponent slowestPokemon;
         PokemonMove fastestmove, slowestMove;
 
         if (Instance.playerPokemon.m_PokemonInfo.Speed >= Instance.enemyPokemon.m_PokemonInfo.Speed)
         {
-            fastestPokemon = Instance.playerPokemon.m_PokemonInfo;
+            fastestPokemon = Instance.playerPokemon;
             fastestmove = Instance.playerPokemon.UseRandomMove();
-            slowestPokemon = Instance.enemyPokemon.m_PokemonInfo;
+            slowestPokemon = Instance.enemyPokemon;
             slowestMove = Instance.enemyPokemon.UseRandomMove();
         }
         else
         {
-            fastestPokemon = Instance.enemyPokemon.m_PokemonInfo;
+            fastestPokemon = Instance.enemyPokemon;
             fastestmove = Instance.enemyPokemon.UseRandomMove();
-            slowestPokemon = Instance.playerPokemon.m_PokemonInfo;
+            slowestPokemon = Instance.playerPokemon;
             slowestMove = Instance.playerPokemon.UseRandomMove();
         }
         Instance.turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon, fastestmove));
@@ -118,7 +118,7 @@ public class CombatManager : StateMachine
                 CombatManager.Instance.BuildTurnQueue();
                 CombatManager.Instance.PlayNextTurn();
 
-                if(CombatManager.Instance.playerMove != null)
+                if(CombatManager.Instance.PokemonMove != null)
                     CombatManager.Instance.PlayNextTurn();
                    
             }
@@ -128,7 +128,7 @@ public class CombatManager : StateMachine
             if (CombatManager.Instance.PokemonMove == null) return;
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                CombatManager.Instance.playerMove = CombatManager.Instance.playerPokemon.UseRandomMove();
+                CombatManager.Instance.PokemonMove = CombatManager.Instance.playerPokemon.UseRandomMove();
             }
         }
         public bool IsActionChosen() => CombatManager.Instance.PokemonMove != null;

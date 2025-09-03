@@ -4,6 +4,7 @@ public class Turn
     PokemonComponent m_Attacker;
     PokemonComponent m_Receiver;
     PokemonMove m_MoveUsed;
+    Pokemoninformation m_PokemonInfo;
 
     Turn m_Turn;
 
@@ -31,17 +32,17 @@ public class Turn
     public class AttackState : State
     {
         Turn m_Turn;
-        Timer Timer;
+        
         public AttackState(Turn p_Turn)
         {
             m_Turn = p_Turn;
         }
         public override void Enter()
         {
-            Timer = new Timer(1.0f); // Example timer duration
-            Debug.Log($"{m_Turn.m_Attacker.Information.Name} is attacking {m_Turn.m_Receiver.Information.Name} with {m_Turn.m_MoveUsed.MoveName}");
+            
+            Debug.Log($"{m_Turn.m_Attacker.m_PokemonInfo.Name} is attacking {m_Turn.m_Receiver.m_PokemonInfo.Name} with {m_Turn.m_MoveUsed.MoveName}");
             // Animate Attacker
-            m_Turn.m_Attacker.PlayAnimation("Basic Attack");
+            m_Turn.m_Attacker.PlayAnimation("Attack");
         }
         public override void Exit()
         {
@@ -49,11 +50,8 @@ public class Turn
         }
         public override void FixedUpdate()
         {
-            Timer.Tick(Time.fixedDeltaTime);
-            if (Timer.IsFinished)
-            {
-                CombatManager.Instance.ChangeState(m_Turn.m_GetDamage); // Change to the damage state
-            }
+             //CombatManager.Instance.ChangeState(m_Turn.m_GetDamage); // Change to the damage state
+           
         }
         public override void Update()
         {
@@ -72,7 +70,7 @@ public class Turn
         {
             int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker.m_PokemonInfo, m_Turn.m_Receiver.m_PokemonInfo);
             m_Turn.m_Receiver.m_PokemonInfo.GetDamaged(damage);
-            Debug.Log($"{m_Turn.m_Receiver.PokemonInformation.Name} received {damage} damage from {m_Turn.m_Attacker.PokemonInformation.Name}'s {m_Turn.m_MoveUsed.MoveName}");
+            Debug.Log($"{m_Turn.m_Receiver.m_PokemonInfo.Name} received {damage} damage from {m_Turn.m_Attacker.m_PokemonInfo.Name}'s {m_Turn.m_MoveUsed.MoveName}");
             // Animate Receiver
             m_Turn.m_Receiver.PlayAnimation("Pain");
         }
@@ -84,12 +82,12 @@ public class Turn
         {
             if (m_Turn.m_Receiver.m_PokemonInfo.Health <= 0)
             {
-                Debug.Log($"{m_Turn.m_Receiver.Information.Name} has fainted!");Debug.Log($"{m_Turn.m_Receiver.Information.Name} has fainted!");
+                Debug.Log($"{m_Turn.m_Receiver.m_PokemonInfo.Name} has fainted!");
                 //end combat
             }
             else
             {
-                CombatManager.PlayNextTurn;
+                CombatManager.Instance.PlayNextTurn();
             }
         }
         public override void Update()
