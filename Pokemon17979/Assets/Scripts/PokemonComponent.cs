@@ -20,7 +20,6 @@ public class PokemonComponent : MonoBehaviour
     }
     public PokemonMove UseMove(string moveName)
     {
-        PokemonMove t_ChosenMove;
         foreach (PokemonMove move in m_PokemonInfo.Moves)
         {
             if (move.MoveName == moveName) { continue; }

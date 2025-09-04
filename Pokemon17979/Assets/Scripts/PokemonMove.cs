@@ -26,7 +26,7 @@ public class PokemonMove : ScriptableObject
     [SerializeField, Range(0,100)] private int m_Accuracy;
     [SerializeField] private int m_PowerPoints;
     [SerializeField] private bool m_IsSpecial;
-    [SerializeField] private PokemonTypes.TypeList m_MoveType;
+    [SerializeField] public PokemonTypes.TypeList m_MoveType;
 
     [Header("Effects")]
     [SerializeField] private string m_AnimationName;

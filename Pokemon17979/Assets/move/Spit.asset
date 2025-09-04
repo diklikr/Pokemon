@@ -10,16 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85376a6313b321c428f35e00630c2ad3, type: 3}
-  m_Name: Tackle
+  m_Name: Spit
   m_EditorClassIdentifier: 
-  m_MoveName: Tackle
-  m_MoveDescription: the pokemon flings forward and tackles your opponent by the
-    balls
+  m_MoveName: Spit
+  m_MoveDescription: Spit in his eye
   m_Power: 15
-  m_Accuracy: 70
+  m_Accuracy: 75
   m_PowerPoints: 0
   m_IsSpecial: 0
-  m_MoveType: 3
+  m_MoveType: 1
   m_AnimationName: 
   m_Icon: {fileID: 0}
   m_SoundEffect: {fileID: 0}

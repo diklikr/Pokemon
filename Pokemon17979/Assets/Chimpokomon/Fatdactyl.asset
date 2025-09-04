@@ -16,13 +16,16 @@ MonoBehaviour:
   m_description: A fat wannabe in search of a new job
   m_sprite: {fileID: 0}
   m_Mode1: {fileID: 4453940328056861257, guid: c34b6127f4f16a7418a36734e8010892, type: 3}
-  m_health: 0
-  m_attack: 0
+  m_health: 100
+  m_attack: 5
   m_specialAttack: 0
   m_defense: 0
   m_specialDefense: 0
-  m_speed: 0
-  m_Moves: []
+  m_speed: 25
+  m_Moves:
+  - {fileID: 11400000, guid: c340ba5bc562c84458820e04e2657bfb, type: 2}
+  - {fileID: 11400000, guid: 05b7102a420a6874fac00dbbc0a146cd, type: 2}
+  - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
   m_MainType: 1
   m_SecondaryType: 3
   m_Evolutionlevel: 0

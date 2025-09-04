@@ -30,9 +30,11 @@ public class CombatManager : StateMachine
     public PokemonComponent playerPokemon;
     public PokemonComponent enemyPokemon;
     public PokemonMove PokemonMove;
+    public CombatUI UI;
 
     public static void SetPlayerMove(PokemonMove pMove)
     {
+        Debug.Log("Chose Move");
         Instance.PokemonMove = pMove;
     }
     
@@ -40,7 +42,8 @@ public class CombatManager : StateMachine
     {
         Instance.turnQueue.Clear();
         Instance.ChangeState(new WaitforActionState());
-
+        Instance.UI = GameManager.CombatUI;
+        Instance.UI.Initialize(Instance.playerPokemon.m_PokemonInfo);
        
     }
     public void BuildTurnQueue()
@@ -101,9 +104,11 @@ public class CombatManager : StateMachine
         }
         public override void Enter()
         {
+            CombatManager.
             Instance.playerPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
             Instance.enemyPokemon.Animator.CrossFadeInFixedTime("Idle", 0.2f);
             Instance.PokemonMove = null;
+            CombatManager.Instance.UI.SetTextBox("Choose an action");
             //Instance.m_UI.DisplayMessage($"Your {Instance.playerPokemon.name} is waiting for instructions...", 20f);
             //Instance.m_TurnQueue.Clear
         }
@@ -117,19 +122,11 @@ public class CombatManager : StateMachine
             {
                 CombatManager.Instance.BuildTurnQueue();
                 CombatManager.Instance.PlayNextTurn();
-
-                if(CombatManager.Instance.PokemonMove != null)
-                    CombatManager.Instance.PlayNextTurn();
                    
             }
         }
         public override void Update()
         {
-            if (CombatManager.Instance.PokemonMove == null) return;
-            if(Input.GetKeyDown(KeyCode.Space))
-            {
-                CombatManager.Instance.PokemonMove = CombatManager.Instance.playerPokemon.UseRandomMove();
-            }
         }
         public bool IsActionChosen() => CombatManager.Instance.PokemonMove != null;
     }

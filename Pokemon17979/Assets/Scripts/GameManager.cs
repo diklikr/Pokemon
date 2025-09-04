@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,8 +30,9 @@ public class GameManager : MonoBehaviour
         return (m_instance);
     }
     #endregion
-    public static GameObject newCombatArena => Instantiate(GetInstance().CombatArenaPrefab);
-    [SerializeField] private GameObject m_CombatArenaPrefab;
+    
+    [SerializeField] private GameObject m_CombatUIPrefab;
+    public static CombatUI CombatUI => Instantiate(GetInstance().m_CombatUIPrefab).GetComponent<CombatUI>();
 
     [SerializeField] private GameObject PokemonPreFab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -65,9 +67,13 @@ public class GameManager : MonoBehaviour
         PokemonComponent pokemonComponent2 = SpawnPokemon(playerPoke2, new Vector3(10, 0, 0));
         pokemonComponent.transform.LookAt(pokemonComponent2.transform);
         pokemonComponent2.transform.LookAt(pokemonComponent.transform);
+        var a = GameManager.CombatUI;
+        a.Initialize(pokemonComponent.m_PokemonInfo);
+        CombatManager.Instance.UI = a;
 
         CombatManager.Instance.playerPokemon = pokemonComponent;
         CombatManager.Instance.enemyPokemon = pokemonComponent2;
+        CombatManager.Instance.StartNewRound();
         //SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
         //SpawnPokemon(playerPoke2, new Vector3(10, 0, 20));
     }
