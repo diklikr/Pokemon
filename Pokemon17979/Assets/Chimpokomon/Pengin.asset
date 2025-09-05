@@ -17,7 +17,7 @@ MonoBehaviour:
   m_sprite: {fileID: 0}
   m_Mode1: {fileID: 3064898669572725428, guid: 68cd269fceee62242b209a9bb0e059d8, type: 3}
   m_health: 100
-  m_attack: 5
+  m_attack: 7
   m_specialAttack: 0
   m_defense: 0
   m_specialDefense: 0

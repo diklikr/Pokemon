@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
     }
     public Pokemon GetRandomPokemon()
     {
-        Pokemon[] pokemons = { poke1, poke2, poke3, poke4 };
+        Pokemon[] pokemons = { poke1, poke2 };
         int randomIndex = Random.Range(0, pokemons.Length);
         return pokemons[randomIndex];
     }

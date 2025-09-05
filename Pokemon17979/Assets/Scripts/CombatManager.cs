@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class CombatManager : StateMachine
 {
@@ -25,12 +26,14 @@ public class CombatManager : StateMachine
         return m_instance;
     }
     #endregion
+    
     public Queue<Turn> turnQueue = new Queue<Turn>();
     Pokemon pokemonAleatorio;
     public PokemonComponent playerPokemon;
     public PokemonComponent enemyPokemon;
     public PokemonMove PokemonMove;
     public CombatUI UI;
+    public InfoBar m_UI;
 
     public static void SetPlayerMove(PokemonMove pMove)
     {
@@ -44,30 +47,28 @@ public class CombatManager : StateMachine
         Instance.ChangeState(new WaitforActionState());
         Instance.UI = GameManager.CombatUI;
         Instance.UI.Initialize(Instance.playerPokemon.m_PokemonInfo);
-       
+        
     }
     public void BuildTurnQueue()
     {
         PokemonComponent fastestPokemon;
         PokemonComponent slowestPokemon;
-        PokemonMove fastestmove, slowestMove;
+        
 
         if (Instance.playerPokemon.m_PokemonInfo.Speed >= Instance.enemyPokemon.m_PokemonInfo.Speed)
         {
             fastestPokemon = Instance.playerPokemon;
-            fastestmove = Instance.playerPokemon.UseRandomMove();
             slowestPokemon = Instance.enemyPokemon;
-            slowestMove = Instance.enemyPokemon.UseRandomMove();
         }
         else
         {
             fastestPokemon = Instance.enemyPokemon;
-            fastestmove = Instance.enemyPokemon.UseRandomMove();
             slowestPokemon = Instance.playerPokemon;
-            slowestMove = Instance.playerPokemon.UseRandomMove();
         }
-        Instance.turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon, fastestmove));
-        Instance.turnQueue.Enqueue(new Turn(slowestPokemon, fastestPokemon, slowestMove));
+        // Use the move chosen by the player for the fastest Pokemon
+        Instance.turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon, Instance.PokemonMove));
+        Instance.turnQueue.Enqueue(new Turn(slowestPokemon, fastestPokemon, Instance.PokemonMove));
+        Instance.m_UI.SetHealth(Instance.playerPokemon.m_PokemonInfo, Instance.enemyPokemon.m_PokemonInfo);
     }
 
     public void PlayNextTurn()
@@ -85,15 +86,7 @@ public class CombatManager : StateMachine
 
     public static int CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
     {
-        if (move.IsSpecial)
-        {
-            return 5 + move.Power * (p_Attacker.SpecialAttack / p_Defender.Defense);
-        }
-        else
-        {
-            return 5 + move.Power * (p_Attacker.Attack / p_Defender.SpecialDefense);
-        }
-
+            return move.Power + p_Attacker.Attack;
     }
 
     public class WaitforActionState : State
@@ -127,6 +120,7 @@ public class CombatManager : StateMachine
         }
         public override void Update()
         {
+            
         }
         public bool IsActionChosen() => CombatManager.Instance.PokemonMove != null;
     }

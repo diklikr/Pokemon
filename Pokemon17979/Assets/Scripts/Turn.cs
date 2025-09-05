@@ -43,15 +43,18 @@ public class Turn
             Debug.Log($"{m_Turn.m_Attacker.m_PokemonInfo.Name} is attacking {m_Turn.m_Receiver.m_PokemonInfo.Name} with {m_Turn.m_MoveUsed.MoveName}");
             // Animate Attacker
             m_Turn.m_Attacker.PlayAnimation("Attack");
+            m_Turn.m_Attack.Exit();
         }
         public override void Exit()
         {
-            m_Turn.m_Attacker.PlayAnimation("Idle");
+           
+            m_Turn.m_GetDamaged.Enter();
+
         }
         public override void FixedUpdate()
         {
-             //CombatManager.Instance.ChangeState(m_Turn.m_GetDamage); // Change to the damage state
-           
+             
+             
         }
         public override void Update()
         {
@@ -80,10 +83,10 @@ public class Turn
         }
         public override void FixedUpdate()
         {
-            if (m_Turn.m_Receiver.m_PokemonInfo.Health <= 0)
+            if (m_Turn.m_Receiver.m_PokemonInfo.CurrentHP == 0)
             {
                 Debug.Log($"{m_Turn.m_Receiver.m_PokemonInfo.Name} has fainted!");
-                //end combat
+                m_Turn.m_death.Enter();
             }
             else
             {
@@ -106,6 +109,7 @@ public class Turn
 
         public override void Enter()
         {
+            m_Turn.m_Attacker.PlayAnimation("Death");
             
         }
 

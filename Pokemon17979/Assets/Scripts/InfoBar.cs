@@ -6,24 +6,25 @@ public class InfoBar : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI m_PokemonName;
     [SerializeField] private Slider m_HealthBar;
-    [SerializeField] private TextMeshProUGUI m_Level;
+    [SerializeField] private Slider m_EnemyHP;
     [SerializeField] private TextMeshProUGUI m_HP;
 
     private float m_TargetHealth;
+    private Pokemoninformation pokemoninformation;
 
     public void Initialize(Pokemoninformation p_Info)
     {
         m_PokemonName.text = p_Info.Name;
         m_HealthBar.maxValue = p_Info.maxHealth;
-        m_Level.text = "Lvl: " + p_Info.Level.ToString();
-        m_HealthBar.value = p_Info.CurrentHP;
+        m_EnemyHP.maxValue = p_Info.maxHealth;
         m_TargetHealth = p_Info.Health;
     }
 
-    private void Update()
+    public void SetHealth(Pokemoninformation playerInfo,Pokemoninformation enemyInfo)
     {
-        //transform.LookAt(transform.position - Camera.main.transform);
+        pokemoninformation = playerInfo;
+        m_HealthBar.value = playerInfo.CurrentHP;
+        m_EnemyHP.value = enemyInfo.CurrentHP;
+        m_HP.text = $"{playerInfo.CurrentHP}/{playerInfo.maxHealth}";
     }
-
-    public void SetHealth(float health) => m_TargetHealth = health;
 }
