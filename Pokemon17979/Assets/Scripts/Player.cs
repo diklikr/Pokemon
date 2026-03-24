@@ -10,16 +10,23 @@ public class Player : StateMachine
     public LayerMask groundLayer;
 
     private InputSystem_Actions m_InputActions;
+
     public bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 0.1f, groundLayer);
+        // Ray from slightly above the transform downward with a small margin.
+        // Adjust distances to fit your character pivot & collider.
+        const float originOffset = 0.1f;
+        const float rayDistance = 0.25f;
+        return Physics.Raycast(transform.position + Vector3.up * originOffset, Vector3.down, rayDistance, groundLayer);
     }
-    
+
     public Vector3 MoveDirection()
     {
-        Vector3 direction = new Vector3(m_InputActions.Player.Move.ReadValue<Vector2>().x, 0, m_InputActions.Player.Move.ReadValue<Vector2>().y);
+        Vector2 raw = m_InputActions.Player.Move.ReadValue<Vector2>();
+        Vector3 direction = new Vector3(raw.x, 0f, raw.y);
         return direction.normalized;
     }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -35,28 +42,29 @@ public class Player : StateMachine
     public void Rotate(float p_RotationSpeed)
     {
         float rotation = MoveDirection().x;
-        animator.InterpolateFloat("Turn", rotation * 90, p_RotationSpeed);
-        if (rotation == 0) { return; }
+        animator.InterpolateFloat("Turn", rotation * 90f, p_RotationSpeed);
+        if (Mathf.Approximately(rotation, 0f)) { return; }
+
         Quaternion targetRotation = Quaternion.Euler(0f, transform.eulerAngles.y + rotation * 90f, 0f);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * p_RotationSpeed);
-        
     }
+
     public void Move(float p_Speed)
     {
         float move = MoveDirection().z;
         if (move <= 0.0f) { return; }
+        // Use the proper Rigidbody property
         rigidBody.linearVelocity = transform.forward * move * p_Speed;
     }
-    
+
     public void ClamptoFloor()
     {
         if (!IsGrounded()) { return; }
         RaycastHit hit;
         if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, 2f, groundLayer))
         {
-        transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
+            transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
         }
-
     }
 }
 
@@ -70,7 +78,6 @@ public class PlayerIdle : State
     }
     public override void Enter()
     {
-        //Debug.Log("player is idle");
         m_Player.animator?.CrossFadeInFixedTime("Idle", 0.2f);
         m_Player.rigidBody.linearVelocity = Vector3.zero;
         m_Player.rigidBody.useGravity = false;
@@ -78,17 +85,21 @@ public class PlayerIdle : State
 
     public override void Update()
     {
-        
+
     }
 
     public override void FixedUpdate()
     {
-        if (m_Player.MoveDirection().x > 0f)
+        // Check forward input (z) � movement uses z axis
+        if (m_Player.MoveDirection().z > 0f)
         {
             m_Player.ChangeState(new PlayerMove(m_Player));
+            return;
         }
-        m_Player.Rotate(5f); 
-        if(!m_Player.IsGrounded())
+
+        m_Player.Rotate(5f);
+
+        if (!m_Player.IsGrounded())
         {
             m_Player.ChangeState(new PlayerFalling(m_Player));
         }
@@ -96,7 +107,6 @@ public class PlayerIdle : State
 
     public override void Exit()
     {
-        //Debug.Log("Player no longer idle");
     }
 }
 
@@ -110,13 +120,11 @@ public class PlayerMove : State
 
     public override void Enter()
     {
-        //Debug.Log("Player is now walking");
         m_Player.animator?.CrossFadeInFixedTime("Move", 0.2f);
     }
 
     public override void Exit()
     {
-        //Debug.Log("Player entering idle");
     }
 
     public override void FixedUpdate()
@@ -124,9 +132,12 @@ public class PlayerMove : State
         if (m_Player.MoveDirection().z <= 0f)
         {
             m_Player.ChangeState(new PlayerIdle(m_Player));
+            return;
         }
+
         m_Player.Move(2f);
         m_Player.Rotate(5f);
+
         if (!m_Player.IsGrounded())
         {
             m_Player.ChangeState(new PlayerFalling(m_Player));
@@ -135,7 +146,7 @@ public class PlayerMove : State
 
     public override void Update()
     {
-        
+
     }
 }
 
@@ -163,11 +174,11 @@ public class PlayerFalling : State
         {
             m_Player.ChangeState(new PlayerIdle(m_Player));
         }
-    } 
+    }
 
     public override void Update()
     {
-        
+
     }
 }
 
