@@ -6,11 +6,11 @@ public class Pasto : MonoBehaviour
     // 20% chance to spawn grass
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent<Player>(out Player player))
         {
             if (Random.value <= chance)
             {
-               GameManager.StartCombat();
+               GameManager.StartCombat(player.poke);
             print("Grass Encounter Triggered!");
             }
             else

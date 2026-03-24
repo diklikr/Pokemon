@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -53,10 +54,13 @@ public class GameManager : MonoBehaviour
         int randomIndex = Random.Range(0, pokemons.Length);
         return pokemons[randomIndex];
     }
-    public static void StartCombat(Pokemon playerPoke)
+    public static async Task StartCombat(Pokemon playerPoke)
     {
-        SceneManager.LoadScene("CombatScene");
-        SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
-        SpawnPokemon(, new Vector3(10, 0, 20));
+        var sceneCombat = SceneManager.LoadSceneAsync("CombatScene");
+        while (!sceneCombat.isDone) await Task.Yield();
+        
+            SpawnPokemon(playerPoke, new Vector3(0, 0, 20));
+            SpawnPokemon(playerPoke, new Vector3(10, 0, 20));
+        
     }
 }

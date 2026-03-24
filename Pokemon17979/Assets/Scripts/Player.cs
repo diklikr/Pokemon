@@ -5,6 +5,8 @@ public class Player : StateMachine
     public Rigidbody rigidBody;
     public Animator animator;
 
+    public Pokemon poke;
+
     public LayerMask groundLayer;
 
     private InputSystem_Actions m_InputActions;

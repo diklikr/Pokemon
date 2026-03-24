@@ -22,6 +22,9 @@ MonoBehaviour:
   m_defense: 0
   m_specialDefense: 0
   m_speed: 0
+  m_Moves:
+  - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
+  - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
   m_MainType: 1
   m_SecondaryType: 4
   m_Evolutionlevel: 10
