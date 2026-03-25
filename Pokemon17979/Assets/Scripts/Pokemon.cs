@@ -46,10 +46,10 @@ public class Pokemon : ScriptableObject
 
     private void OnValidate()
     {
-        if (m_Moves.Length > 4)
+        if (m_Moves.Length > 2)
         {
-            Debug.LogWarning("A Pokémon can only have 4 moves. The excess moves will be ignored.");
-            System.Array.Resize(ref m_Moves, 4);
+            Debug.LogWarning("A Pokémon can only have 2 moves. The excess moves will be ignored.");
+            System.Array.Resize(ref m_Moves, 2);
         }
     }
 }

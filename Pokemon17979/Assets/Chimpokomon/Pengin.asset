@@ -16,15 +16,15 @@ MonoBehaviour:
   m_description: A penguin
   m_sprite: {fileID: 21300000, guid: ec261bc4bf0043d4389ebe763dfda02b, type: 3}
   m_Mode1: {fileID: 919132149155446097, guid: a2ef474392ac74f409c70c61ccb6c24a, type: 3}
-  m_health: 1
-  m_attack: 0
+  m_health: 10
+  m_attack: 2
   m_specialAttack: 0
   m_defense: 0
   m_specialDefense: 0
-  m_speed: 0
+  m_speed: 1
   m_Moves:
   - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
-  - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
+  - {fileID: 11400000, guid: 22b6a8af4e4ec9842ba17d71089eb143, type: 2}
   m_MainType: 1
   m_SecondaryType: 4
   m_Evolutionlevel: 10

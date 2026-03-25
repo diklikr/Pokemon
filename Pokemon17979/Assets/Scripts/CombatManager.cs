@@ -1,8 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEngine.SceneManagement;
-
 public class CombatManager : StateMachine
 {
     #region Singleton
@@ -31,7 +28,6 @@ public class CombatManager : StateMachine
     public PokemonComponent enemyPokemon;
     public PokemonMove PokemonMove;
 
-    
     public void StartNewRound()
     {
         Instance.turnQueue.Clear();
@@ -63,7 +59,7 @@ public class CombatManager : StateMachine
 
     public void PlayNextTurn()
     {
-        if(Instance.turnQueue.Count == 0)
+        if (Instance.turnQueue.Count == 0)
         {
             StartNewRound();
         }
@@ -76,14 +72,18 @@ public class CombatManager : StateMachine
 
     public static int CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
     {
+        // Use floats, correct stat mapping and avoid divide-by-zero
+        float damage;
         if (move.IsSpecial)
         {
-            return 5 + move.Power * (p_Attacker.SpecialAttack / p_Defender.Defense);
+            damage = 5f + move.Power * ((float)p_Attacker.SpecialAttack / Mathf.Max(1, p_Defender.SpecialDefense));
         }
         else
         {
-            return 5 + move.Power * (p_Attacker.Attack / p_Defender.SpecialDefense);
+            damage = 5f + move.Power * ((float)p_Attacker.Attack / Mathf.Max(1, p_Defender.Defense));
         }
 
+        int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage));
+        return finalDamage;
     }
 }

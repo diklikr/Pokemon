@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class Button : MonoBehaviour
+public class UIButtons: MonoBehaviour
 {
     public void StartButton()
     {

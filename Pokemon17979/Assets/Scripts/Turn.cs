@@ -20,7 +20,6 @@ public class Turn
     public void StartTurn()
     {
         CombatManager.Instance.ChangeState(m_Attack);
-
     }
 
     public class AttackState : State
@@ -67,13 +66,13 @@ public class Turn
         }
         public override void FixedUpdate()
         {
-            if (m_Turn.m_Receiver.Health <= 0)
+            if (m_Turn.m_Receiver.IsFainted)
             {
-                //end combat
+                // end combat (hook into your combat end logic)
             }
             else
             {
-                //CombatManager.PlayNextTurn;
+                CombatManager.Instance.PlayNextTurn();
             }
         }
         public override void Update()

@@ -13,8 +13,7 @@ public class Player : StateMachine
 
     public bool IsGrounded()
     {
-        // Ray from slightly above the transform downward with a small margin.
-        // Adjust distances to fit your character pivot & collider.
+       
         const float originOffset = 0.1f;
         const float rayDistance = 0.25f;
         return Physics.Raycast(transform.position + Vector3.up * originOffset, Vector3.down, rayDistance, groundLayer);
@@ -23,11 +22,9 @@ public class Player : StateMachine
     public Vector3 MoveDirection()
     {
         Vector2 raw = m_InputActions.Player.Move.ReadValue<Vector2>();
-        Vector3 direction = new Vector3(raw.x, 0f, raw.y);
-        return direction.normalized;
+        return new Vector3(raw.x, 0f, raw.y);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         m_InputActions = new InputSystem_Actions();
@@ -37,6 +34,7 @@ public class Player : StateMachine
         animator = GetComponent<Animator>();
 
         m_CurrentState = new PlayerIdle(this);
+        m_CurrentState?.Enter(); // ensure initial state's Enter is called
     }
 
     public void Rotate(float p_RotationSpeed)
@@ -53,8 +51,10 @@ public class Player : StateMachine
     {
         float move = MoveDirection().z;
         if (move <= 0.0f) { return; }
-        // Use the proper Rigidbody property
-        rigidBody.linearVelocity = transform.forward * move * p_Speed;
+        // Preserve vertical velocity (gravity/jumps)
+        Vector3 newVel = transform.forward * move * p_Speed;
+        newVel.y = rigidBody.linearVelocity.y;
+        rigidBody.linearVelocity = newVel;
     }
 
     public void ClamptoFloor()
@@ -90,7 +90,7 @@ public class PlayerIdle : State
 
     public override void FixedUpdate()
     {
-        // Check forward input (z) � movement uses z axis
+        // Check forward input (z) — movement uses z axis
         if (m_Player.MoveDirection().z > 0f)
         {
             m_Player.ChangeState(new PlayerMove(m_Player));
@@ -121,6 +121,7 @@ public class PlayerMove : State
     public override void Enter()
     {
         m_Player.animator?.CrossFadeInFixedTime("Move", 0.2f);
+        m_Player.rigidBody.useGravity = false;
     }
 
     public override void Exit()
@@ -191,8 +192,9 @@ public static class MyExtentions
         animator.SetFloat(parameter, current);
     }
 
-    public static void Interpolate(this float me, float target, float speed)
+    // Note: this extension does not change the caller variable because float is a value type.
+    public static float Interpolate(this float me, float target, float speed)
     {
-        me = Mathf.MoveTowards(me, target, speed * Time.deltaTime);
+        return Mathf.MoveTowards(me, target, speed * Time.deltaTime);
     }
 }

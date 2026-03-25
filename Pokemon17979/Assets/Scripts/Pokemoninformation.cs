@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -7,28 +5,39 @@ public class Pokemoninformation
 {
     public Pokemoninformation(Pokemon definition)
     {
-       m_Definition = definition;
-       m_Name = definition.PokemonName;
-        m_currentHealth = maxHealth;
+        m_Definition = definition;
+        m_Name = definition.PokemonName;
+        m_Level = 1;
+        m_currentHealth = MaxHealth;
         m_Moves = new List<PokemonMove>(4);
-        foreach (PokemonMove move in definition.Moves)
+        if (definition.Moves != null)
         {
-            if (move == null) { continue; }
+            foreach (PokemonMove move in definition.Moves)
+            {
+                if (move == null) { continue; }
                 m_Moves.Add(move);
+            }
         }
     }
-    public string Name => m_Name;  
-    public string description => m_Definition.Description;
-    public int maxHealth => m_Definition.Health + m_Level;
+
+    public string Name => m_Name;
+    public string Description => m_Definition.Description;
+
+    // Max health (base + level)
+    public int MaxHealth => m_Definition.Health + m_Level;
+
+    // Current health (what you should check for fainted)
+    public int Health => m_currentHealth;
+    public int CurrentHP => m_currentHealth;
+
     public int Attack => m_Definition.Attack + m_Level;
     public int SpecialAttack => m_Definition.SpecialAttack + m_Level;
-    public int Health => m_Definition.Health + m_Level;
-    public GameObject Mode1 => m_Definition.Mode1;
-    public Sprite Sprite => m_Definition.Sprite;
     public int Defense => m_Definition.Defense + m_Level;
     public int SpecialDefense => m_Definition.SpecialDefense + m_Level;
     public int Speed => m_Definition.Speed + m_Level;
-    public int CurrentHP => m_currentHealth;
+
+    public GameObject Mode1 => m_Definition.Mode1;
+    public Sprite Sprite => m_Definition.Sprite;
 
     public bool IsFainted => m_currentHealth <= 0;
 
@@ -36,7 +45,6 @@ public class Pokemoninformation
     public PokemonTypes.TypeList SecondaryType => m_Definition.SecondaryType;
 
     public PokemonMove[] Moves => m_Moves.ToArray();
-
 
     private Pokemon m_Definition;
     private string m_Name;
@@ -58,18 +66,19 @@ public class Pokemoninformation
     public void Heal(int amount)
     {
         m_currentHealth += amount;
-        if (m_currentHealth > maxHealth)
+        if (m_currentHealth > MaxHealth)
         {
-            m_currentHealth = maxHealth; // Prevent health from exceeding max health
+            m_currentHealth = MaxHealth; // Prevent health from exceeding max health
         }
     }
 
-    public void GainXp(int amouunt)
+    public void GainXp(int amount)
     {
-        m_Xp += amouunt;
-        if(m_Xp >= GetXpForNextLevel())
+        m_Xp += amount;
+        int xpForNext = GetXpForNextLevel();
+        if (m_Xp >= xpForNext)
         {
-            m_Xp -= GetXpForNextLevel();
+            m_Xp -= xpForNext;
             LevelUp();
         }
     }
@@ -82,7 +91,7 @@ public class Pokemoninformation
     private void LevelUp()
     {
         m_Level++;
-        m_currentHealth = maxHealth;
+        m_currentHealth = MaxHealth;
     }
     public void Rename(string newName)
     {
@@ -120,13 +129,12 @@ public class Pokemoninformation
             Debug.LogWarning("Mode1 prefab is not assigned for " + m_Name);
             return null;
         }
-        
-            GameObject t_Mode1 = UnityEngine.Object.Instantiate(m_Definition.Mode1, p_Parent);
+
+        GameObject t_Mode1 = UnityEngine.Object.Instantiate(m_Definition.Mode1, p_Parent);
         t_Mode1.transform.localPosition = Vector3.zero; // Reset position to parent
         t_Mode1.transform.localRotation = Quaternion.identity; // Reset rotation to parent
         t_Mode1.transform.localScale = Vector3.one; // Reset scale to parent
         t_Mode1.name = "Mode1";
         return t_Mode1;
-
     }
 }

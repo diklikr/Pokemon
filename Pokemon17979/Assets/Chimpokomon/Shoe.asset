@@ -12,16 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d5b49a98de13e34dbe0c2034d7aae50, type: 3}
   m_Name: Shoe
   m_EditorClassIdentifier: 
-  m_name: Shoe
+  m_PokemonName: Shoe
   m_description: 
   m_sprite: {fileID: 0}
-  m_Mode1: {fileID: 0}
-  m_health: 0
-  m_attack: 0
+  m_Mode1: {fileID: 2449598816318800953, guid: b4cd8f01ebbe3794fa103f594002b969, type: 3}
+  m_health: 10
+  m_attack: 2
   m_specialAttack: 0
   m_defense: 0
   m_specialDefense: 0
   m_speed: 0
+  m_Moves:
+  - {fileID: 11400000, guid: 8a6c08fcb8be07d49821f0f57dd51065, type: 2}
+  - {fileID: 11400000, guid: 22b6a8af4e4ec9842ba17d71089eb143, type: 2}
   m_MainType: 3
   m_SecondaryType: 3
   m_Evolutionlevel: 0
