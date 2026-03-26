@@ -10,8 +10,8 @@ public class Pasto : MonoBehaviour
         {
             if (Random.value <= chance)
             {
-               GameManager.StartCombat(player.poke);
-            print("Grass Encounter Triggered!");
+             GameManager.StartCombat(player.poke);
+                print("Grass Encounter Triggered!");
             }
             else
             {

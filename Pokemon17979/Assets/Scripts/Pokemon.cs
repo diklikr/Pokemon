@@ -1,4 +1,3 @@
-using UnityEditor.Build;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Scriptable Objects/Pokemon")]

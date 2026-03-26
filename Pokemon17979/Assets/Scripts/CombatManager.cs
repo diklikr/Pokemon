@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+
 public class CombatManager : StateMachine
 {
     #region Singleton
-    public static GameObject newCombatArena;
-
     public static CombatManager Instance => GetInstance();
     private static CombatManager m_instance;
 
@@ -22,57 +23,99 @@ public class CombatManager : StateMachine
         return m_instance;
     }
     #endregion
-    public Queue<Turn> turnQueue = new Queue<Turn>();
-    Pokemon pokemonAleatorio;
+    public Transform playerSpawn;
+    public Transform enemySpawn;
+
+    [Header("Runtime references (can be placeholders set in the scene)")]
     public PokemonComponent playerPokemon;
     public PokemonComponent enemyPokemon;
-    public PokemonMove PokemonMove;
+
+    public Queue<Turn> turnQueue = new Queue<Turn>();
+
+    // Event fired when the player chooses a move
+    public event Action OnPlayerMoveChosen;
+
+    // Player's chosen move (set by UI via ChoosePlayerMove)
+    public PokemonMove playerChosenMove;
+
+    public void InitializeCombat(PokemonComponent player, PokemonComponent enemy)
+    {
+        playerPokemon = player;
+        enemyPokemon = enemy;
+        Debug.Log("CombatManager.InitializeCombat: player/enemy assigned.");
+    }
+
+    // Called by MovesUI when the player picks a move
+    public void ChoosePlayerMove(PokemonMove move)
+    {
+        if (move == null)
+        {
+            Debug.LogWarning("ChoosePlayerMove: null move passed.");
+            return;
+        }
+        playerChosenMove = move;
+        OnPlayerMoveChosen?.Invoke();
+    }
 
     public void StartNewRound()
     {
-        Instance.turnQueue.Clear();
-        Instance.ChangeState(new WaitforActionState());
+        turnQueue.Clear();
+        ChangeState(new WaitforActionState());
     }
+
     public void BuildTurnQueue()
     {
-        Pokemoninformation fastestPokemon;
-        Pokemoninformation slowestPokemon;
-        PokemonMove fastestmove, slowestMove;
-
-        if (Instance.playerPokemon.m_PokemonInfo.Speed >= Instance.enemyPokemon.m_PokemonInfo.Speed)
+        if (playerPokemon == null || enemyPokemon == null)
         {
-            fastestPokemon = Instance.playerPokemon.m_PokemonInfo;
-            fastestmove = Instance.playerPokemon.UseRandomMove();
-            slowestPokemon = Instance.enemyPokemon.m_PokemonInfo;
-            slowestMove = Instance.enemyPokemon.UseRandomMove();
+            Debug.LogWarning("BuildTurnQueue: missing player or enemy Pokemon.");
+            return;
+        }
+
+        if (playerChosenMove == null)
+        {
+            Debug.LogWarning("BuildTurnQueue: no player move chosen.");
+            return;
+        }
+
+        // Enemy chooses a move
+        PokemonMove enemyMove = enemyPokemon.UseRandomMove();
+
+        var pInfo = playerPokemon.m_PokemonInfo;
+        var eInfo = enemyPokemon.m_PokemonInfo;
+
+        // Decide ordering by speed
+        if (pInfo.Speed >= eInfo.Speed)
+        {
+            turnQueue.Enqueue(new Turn(pInfo, eInfo, playerChosenMove));
+            if (enemyMove != null)
+                turnQueue.Enqueue(new Turn(eInfo, pInfo, enemyMove));
         }
         else
         {
-            fastestPokemon = Instance.enemyPokemon.m_PokemonInfo;
-            fastestmove = Instance.enemyPokemon.UseRandomMove();
-            slowestPokemon = Instance.playerPokemon.m_PokemonInfo;
-            slowestMove = Instance.playerPokemon.UseRandomMove();
+            if (enemyMove != null)
+                turnQueue.Enqueue(new Turn(eInfo, pInfo, enemyMove));
+            turnQueue.Enqueue(new Turn(pInfo, eInfo, playerChosenMove));
         }
-        Instance.turnQueue.Enqueue(new Turn(fastestPokemon, slowestPokemon, fastestmove));
-        Instance.turnQueue.Enqueue(new Turn(slowestPokemon, fastestPokemon, slowestMove));
+
+        // Clear chosen move so it is not reused
+        playerChosenMove = null;
     }
 
     public void PlayNextTurn()
     {
-        if (Instance.turnQueue.Count == 0)
+        if (turnQueue.Count == 0)
         {
             StartNewRound();
         }
         else
         {
-            Turn t_NextTurn = Instance.turnQueue.Dequeue();
+            Turn t_NextTurn = turnQueue.Dequeue();
             t_NextTurn.StartTurn();
         }
     }
 
     public static int CalculateDamage(PokemonMove move, Pokemoninformation p_Attacker, Pokemoninformation p_Defender)
     {
-        // Use floats, correct stat mapping and avoid divide-by-zero
         float damage;
         if (move.IsSpecial)
         {
@@ -85,5 +128,28 @@ public class CombatManager : StateMachine
 
         int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage));
         return finalDamage;
+    }
+
+    // Called when a Pokemon hits 0 HP
+    public void HandleFainted(Pokemoninformation fainted)
+    {
+        // prevent further turns while handling
+        turnQueue.Clear();
+
+        if (playerPokemon != null && playerPokemon.m_PokemonInfo == fainted)
+        {
+            Debug.Log("CombatManager: Player fainted. Loading GameOver scene.");
+            SceneManager.LoadScene("GameOver");
+            return;
+        }
+
+        if (enemyPokemon != null && enemyPokemon.m_PokemonInfo == fainted)
+        {
+            Debug.Log("CombatManager: Enemy fainted. Loading Victory scene.");
+            SceneManager.LoadScene("Victory");
+            return;
+        }
+
+        Debug.LogWarning("CombatManager.HandleFainted: fainted pokemon not recognized.");
     }
 }

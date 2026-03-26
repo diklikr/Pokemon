@@ -8,75 +8,84 @@ public class MovesUI : MonoBehaviour
     public Button[] moveButtons = new Button[2];
     public TextMeshProUGUI[] moveLabels = new TextMeshProUGUI[2];
 
-    private CombatManager cm;
-    [Header("Assign in Inspector")]
+    [Header("HP Sliders")]
     public Slider playerSlider;
     public Slider enemySlider;
 
     private Pokemoninformation playerInfo;
     private Pokemoninformation enemyInfo;
 
-    private bool _bound = false; // ensures bind happens only once
-
-    private void Start()
-    {
-        cm = CombatManager.Instance;
-        Refresh();
-        TryAutoBind(); // attempt immediate bind in case CM already has pokemon
-    }
-
-    private void Update()
-    {
-        // Try bind if not yet bound and CombatManager has spawned pokemons
-        if (!_bound)
-            TryAutoBind();
-
-        // Update slider values every frame (keeps bars in sync while combat runs)
-        if (playerInfo != null && playerSlider != null)
-            playerSlider.value = Mathf.Clamp(playerInfo.CurrentHP, 0, playerInfo.MaxHealth);
-
-        if (enemyInfo != null && enemySlider != null)
-            enemySlider.value = Mathf.Clamp(enemyInfo.CurrentHP, 0, enemyInfo.MaxHealth);
-    }
-
-    // Attempt to bind when CombatManager and its PokemonComponents are ready
-    private void TryAutoBind()
-    {
-        if (_bound) return;
-        if (cm == null) cm = CombatManager.Instance;
-        if (cm == null) return;
-
-        if (cm.playerPokemon != null && cm.enemyPokemon != null)
-        {
-            Bind(cm.playerPokemon.m_PokemonInfo, cm.enemyPokemon.m_PokemonInfo);
-            UpdateNow(); // ensure sliders show full health immediately
-            _bound = true;
-            Refresh(); // now populate move buttons based on bound player
-        }
-    }
-
-    // Bind the two Pokemon informations to the sliders
+    // Bind the two Pokemon informations to the UI (called by GameManager after spawning/initializing)
     public void Bind(Pokemoninformation player, Pokemoninformation enemy)
     {
+        // unsubscribe previous if any (not strictly necessary here)
+        if (playerInfo != null)
+        {
+            playerInfo.OnHPChanged -= OnPlayerHPChanged;
+        }
+        if (enemyInfo != null)
+        {
+            enemyInfo.OnHPChanged -= OnEnemyHPChanged;
+        }
+
         playerInfo = player;
         enemyInfo = enemy;
 
+        // subscribe to HP changes
+        if (playerInfo != null)
+            playerInfo.OnHPChanged += OnPlayerHPChanged;
+        if (enemyInfo != null)
+            enemyInfo.OnHPChanged += OnEnemyHPChanged;
+
+        // Initialize sliders immediately
         if (playerSlider != null)
         {
             playerSlider.wholeNumbers = true;
             playerSlider.maxValue = playerInfo != null ? playerInfo.MaxHealth : 1;
             playerSlider.value = playerInfo != null ? playerInfo.CurrentHP : 0;
         }
-
         if (enemySlider != null)
         {
             enemySlider.wholeNumbers = true;
             enemySlider.maxValue = enemyInfo != null ? enemyInfo.MaxHealth : 1;
             enemySlider.value = enemyInfo != null ? enemyInfo.CurrentHP : 0;
         }
+
+        Refresh();
     }
 
-    // Force immediate visual update (use after Bind or after damage/heal)
+    private void OnPlayerHPChanged(int cur, int max)
+    {
+        if (playerSlider != null)
+        {
+            playerSlider.maxValue = max;
+            playerSlider.value = cur;
+        }
+    }
+
+    private void OnEnemyHPChanged(int cur, int max)
+    {
+        if (enemySlider != null)
+        {
+            enemySlider.maxValue = max;
+            enemySlider.value = cur;
+        }
+    }
+
+    private void Start()
+    {
+        Refresh();
+    }
+
+    private void Update()
+    {
+        // safety: keep sliders in sync in case of missing events
+        if (playerInfo != null && playerSlider != null)
+            playerSlider.value = Mathf.Clamp(playerInfo.CurrentHP, 0, playerInfo.MaxHealth);
+        if (enemyInfo != null && enemySlider != null)
+            enemySlider.value = Mathf.Clamp(enemyInfo.CurrentHP, 0, enemyInfo.MaxHealth);
+    }
+
     public void UpdateNow()
     {
         if (playerInfo != null && playerSlider != null)
@@ -84,7 +93,6 @@ public class MovesUI : MonoBehaviour
             playerSlider.maxValue = playerInfo.MaxHealth;
             playerSlider.value = playerInfo.CurrentHP;
         }
-
         if (enemyInfo != null && enemySlider != null)
         {
             enemySlider.maxValue = enemyInfo.MaxHealth;
@@ -94,13 +102,20 @@ public class MovesUI : MonoBehaviour
 
     public void Refresh()
     {
-        if (cm == null || cm.playerPokemon == null)
+        if (playerInfo == null)
+        {
+            var cm = CombatManager.Instance;
+            if (cm != null && cm.playerPokemon != null)
+                playerInfo = cm.playerPokemon.m_PokemonInfo;
+        }
+
+        if (playerInfo == null)
         {
             ClearAll();
             return;
         }
 
-        var moves = cm.playerPokemon.m_PokemonInfo.Moves;
+        var moves = playerInfo.Moves;
         for (int i = 0; i < moveButtons.Length; i++)
         {
             bool hasMove = moves != null && i < moves.Length && moves[i] != null;
@@ -124,7 +139,6 @@ public class MovesUI : MonoBehaviour
             return;
 
         Button btn = moveButtons[index];
-
         btn.onClick.RemoveAllListeners();
         btn.gameObject.SetActive(interactable);
 
@@ -135,11 +149,13 @@ public class MovesUI : MonoBehaviour
         }
     }
 
+    // Called by the button click
     public void OnMoveButton(int index)
     {
+        var cm = CombatManager.Instance;
         if (cm == null)
         {
-            Debug.LogWarning("MoveUIController: CombatManager instance not found.");
+            Debug.LogWarning("MovesUI: CombatManager instance not found.");
             return;
         }
 
@@ -147,30 +163,33 @@ public class MovesUI : MonoBehaviour
         var enemyComp = cm.enemyPokemon;
         if (playerComp == null || enemyComp == null)
         {
-            Debug.LogWarning("MoveUIController: player or enemy PokemonComponent is not assigned on CombatManager.");
+            Debug.LogWarning("MovesUI: player or enemy PokemonComponent is not assigned on CombatManager.");
             return;
         }
 
         var moves = playerComp.m_PokemonInfo.Moves;
         if (moves == null || index < 0 || index >= moves.Length || moves[index] == null)
         {
-            Debug.LogWarning($"MoveUIController: invalid move index {index}.");
+            Debug.LogWarning($"MovesUI: invalid move index {index}.");
             return;
         }
 
         PokemonMove chosen = moves[index];
 
-        // Enqueue player turn
-        cm.turnQueue.Enqueue(new Turn(playerComp.m_PokemonInfo, enemyComp.m_PokemonInfo, chosen));
+        // Notify CombatManager of the chosen move (event-driven)
+        cm.ChoosePlayerMove(chosen);
 
-        // Enemy chooses a random move (simple response)
-        PokemonMove enemyMove = enemyComp.UseRandomMove();
-        if (enemyMove != null)
-            cm.turnQueue.Enqueue(new Turn(enemyComp.m_PokemonInfo, playerComp.m_PokemonInfo, enemyMove));
+        // Disable buttons until next WaitforActionState.Enter re-enables them
+        SetButtonsInteractable(false);
+    }
 
-        // Start processing turns
-        cm.PlayNextTurn();
-
-        Refresh();
+    // Allow WaitforActionState to enable/disable buttons
+    public void SetButtonsInteractable(bool enabled)
+    {
+        foreach (var b in moveButtons)
+        {
+            if (b != null)
+                b.interactable = enabled;
+        }
     }
 }

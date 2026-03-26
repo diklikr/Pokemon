@@ -1,8 +1,10 @@
+using UnityEngine;
+
 public class Turn
 {
-    Pokemoninformation m_Attacker;
-    Pokemoninformation m_Receiver;
-    PokemonMove m_MoveUsed;
+    public Pokemoninformation m_Attacker;
+    public Pokemoninformation m_Receiver;
+    public PokemonMove m_MoveUsed;
 
     State m_Attack;
     State m_GetDamaged;
@@ -32,7 +34,8 @@ public class Turn
         }
         public override void Enter()
         {
-
+            // you can trigger attack animation here via PokemonComponent (if you map them)
+            CombatManager.Instance.ChangeState(m_Turn.m_GetDamaged);
         }
         public override void Exit()
         {
@@ -57,8 +60,22 @@ public class Turn
         }
         public override void Enter()
         {
+            // Apply damage
             int damage = CombatManager.CalculateDamage(m_Turn.m_MoveUsed, m_Turn.m_Attacker, m_Turn.m_Receiver);
             m_Turn.m_Receiver.GetDamaged(damage);
+
+            // After applying damage, check faint and either end combat or continue
+            var cm = CombatManager.Instance;
+            if (m_Turn.m_Receiver.IsFainted)
+            {
+                if (cm != null)
+                    cm.HandleFainted(m_Turn.m_Receiver);
+            }
+            else
+            {
+                if (cm != null)
+                    cm.PlayNextTurn();
+            }
         }
         public override void Exit()
         {
@@ -66,14 +83,7 @@ public class Turn
         }
         public override void FixedUpdate()
         {
-            if (m_Turn.m_Receiver.IsFainted)
-            {
-                // end combat (hook into your combat end logic)
-            }
-            else
-            {
-                CombatManager.Instance.PlayNextTurn();
-            }
+
         }
         public override void Update()
         {

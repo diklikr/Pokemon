@@ -15,7 +15,7 @@ MonoBehaviour:
   m_MoveName: Tackle
   m_MoveDescription: the pokemon flings forward and tackles your opponent by the
     balls
-  m_Power: 5
+  m_Power: 1
   m_Accuracy: 70
   m_PowerPoints: 0
   m_IsSpecial: 0

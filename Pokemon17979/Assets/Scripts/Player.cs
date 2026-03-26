@@ -13,7 +13,6 @@ public class Player : StateMachine
 
     public bool IsGrounded()
     {
-       
         const float originOffset = 0.1f;
         const float rayDistance = 0.25f;
         return Physics.Raycast(transform.position + Vector3.up * originOffset, Vector3.down, rayDistance, groundLayer);
@@ -192,7 +191,6 @@ public static class MyExtentions
         animator.SetFloat(parameter, current);
     }
 
-    // Note: this extension does not change the caller variable because float is a value type.
     public static float Interpolate(this float me, float target, float speed)
     {
         return Mathf.MoveTowards(me, target, speed * Time.deltaTime);
